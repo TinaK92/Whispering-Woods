@@ -8,7 +8,7 @@ from wtforms import (
     SelectMultipleField,
 )
 from wtforms.validators import DataRequired, Optional
-from app.api import ALLOWED_EXTENSIONS
+from app.api.aws_helpers import ALLOWED_EXTENSIONS
 
 
 class ListingForm(FlaskForm):
@@ -19,3 +19,6 @@ class ListingForm(FlaskForm):
     image_url = FileField(
         "Image File", validators=[Optional(), FileAllowed(list(ALLOWED_EXTENSIONS))]
     )
+
+    def __init__(self, *args, **kwargs):
+        super(ListingForm, self).__init__(*args, **kwargs)
