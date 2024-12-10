@@ -19,6 +19,7 @@ RUN pip install psycopg2
 
 COPY . .
 
+RUN echo $DATABASE_URL
 RUN flask db upgrade
 RUN flask seed all
 CMD gunicorn app:app
