@@ -19,6 +19,10 @@ RUN pip install psycopg2
 
 COPY . .
 
-RUN flask db upgrade
-RUN flask seed all
-CMD gunicorn app:app
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+ENTRYPOINT ["/wait-for-it.sh", "db_host:5175", "--", "flask", "db", "upgrade"]
+
+# RUN flask db upgrade
+# RUN flask seed all
+# CMD gunicorn app:app
