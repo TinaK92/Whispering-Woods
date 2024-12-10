@@ -1,15 +1,42 @@
-from app.models import db, User, environment, SCHEMA
-from sqlalchemy.sql import text
+from datetime import datetime
+from app.models import db, User
 
-
-# Adds a demo user, you can add other users here if you want
 def seed_users():
-    demo = User(
-        username='Demo', email='demo@aa.io', password='password', first_name='Demo', last_name='User')
-    marnie = User(
-        username='marnie', email='marnie@aa.io', password='password', first_name='Marnie', last_name='May')
-    bobbie = User(
-        username='bobbie', email='bobbie@aa.io', password='password', first_name='Bobbie', last_name='Smith')
+    now = datetime.utcnow()
+
+    demo = User.query.filter_by(username='Demo').first()
+    if not demo:
+        demo = User(
+            username='Demo',
+            email='demo@aa.io',
+            password='password',
+            first_name='Demo',
+            last_name='User',
+            created_at=now,
+            updated_at=now
+        )
+    marnie = User.query.filter_by(username='marnie').first()
+    if not marnie:
+        marnie = User(
+            username='marnie',
+            email='marnie@aa.io',
+            password='password',
+            first_name='Marnie',
+            last_name='May',
+            created_at=now,
+            updated_at=now
+        )
+    bobbie = User.query.filter_by(username='bobbie').first()
+    if not bobbie:
+        bobbie = User(
+            username='bobbie',
+            email='bobbie@aa.io',
+            password='password',
+            first_name='Bobbie',
+            last_name='Smith',
+            created_at=now,
+            updated_at=now
+        )
 
     db.session.add(demo)
     db.session.add(marnie)

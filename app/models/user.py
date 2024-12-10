@@ -15,6 +15,10 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(40), nullable=False, unique=True)
     email = db.Column(db.String(255), nullable=False, unique=True)
     hashed_password = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.now())
+    updated_at = db.Column(
+        db.DateTime, nullable=False, default=db.func.now(), onupdate=db.func.now()
+    )
 
     # Relationships
     listings = db.relationship("Listing", back_populates="user")
