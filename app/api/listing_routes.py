@@ -1,9 +1,11 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from app.models import Listing, db
 from flask_login import current_user, login_required
 from app.forms.listing_form import ListingForm
 from app.api.aws_helpers import upload_file_to_s3, get_unique_filename, allowed_file
 from dotenv import load_dotenv
+import os
+import requests
 
 # Loading my enviorment variables from my .env
 load_dotenv()

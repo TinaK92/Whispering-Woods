@@ -30,4 +30,6 @@ class Listing(db.Model):
             "description": self.description,
             "base_price": str(self.base_price),
             "image_url": self.image_url,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
         }
