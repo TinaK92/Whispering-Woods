@@ -1,5 +1,6 @@
 from datetime import datetime
-from app.models import db, User
+from app.models import db, User, environment, SCHEMA
+from sqlalchemy.sql import text
 
 def seed_users():
     now = datetime.utcnow()
