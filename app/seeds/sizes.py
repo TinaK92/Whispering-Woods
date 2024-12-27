@@ -1,4 +1,4 @@
-from app.models import db, Size, environment
+from app.models import db, Size, environment, SCHEMA
 
 def seed_sizes():
     sizes = [
