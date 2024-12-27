@@ -13,6 +13,7 @@ def seed_users():
             password='password',
             first_name='Demo',
             last_name='User',
+            role='admin',
             created_at=now,
             updated_at=now
         )
@@ -24,6 +25,7 @@ def seed_users():
             password='password',
             first_name='Marnie',
             last_name='May',
+            role='admin',
             created_at=now,
             updated_at=now
         )
@@ -35,6 +37,7 @@ def seed_users():
             password='password',
             first_name='Bobbie',
             last_name='Smith',
+            role='member',
             created_at=now,
             updated_at=now
         )

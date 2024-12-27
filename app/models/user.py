@@ -20,6 +20,8 @@ class User(db.Model, UserMixin):
         db.DateTime, nullable=False, default=db.func.now(), onupdate=db.func.now()
     )
 
+    role = db.Column(db.String(20), nullable=False, default='member')
+
     # Relationships
     listings = db.relationship("Listing", back_populates="user")
 
@@ -40,5 +42,10 @@ class User(db.Model, UserMixin):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'username': self.username,
-            'email': self.email
+            'email': self.email,
+            'role': self.role,
         }
+    
+    # Helper function to check if the user is an admin
+    def is_admin(self):
+        return self.role == 'admin'
