@@ -1,5 +1,8 @@
+from sqlalchemy.schema import Table, Column
+from sqlalchemy.sql.sqltypes import Integer
 from .db import db, environment, SCHEMA, add_prefix_for_prod
-from sqlalchemy.schema import Table
+
+
 
 listing_sizes = Table(
     "listing_sizes",
