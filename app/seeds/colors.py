@@ -1,7 +1,6 @@
 from app.models import db, Color, environment, SCHEMA
 from sqlalchemy.sql import text
 
-
 def seed_colors():
     colors = [
         {
@@ -102,14 +101,18 @@ def seed_colors():
     ]
 
     for color_data in colors:
-        color = Color(**color_data)
-        db.session.add(color)
+        # Check if the color already exists to avoid duplicates
+        color = Color.query.filter_by(name=color_data["name"]).first()
+        if not color:
+            color = Color(**color_data)
+            db.session.add(color)
+
     db.session.commit()
 
 def undo_seed_colors():
     if environment == "production":
         db.session.execute(f"TRUNCATE table {SCHEMA}.colors RESTART IDENTITY CASCADE;")
     else:
-        db.session.execute(text("DELETE FROM colors"))
+        db.session.execute(text("DELETE FROM colors;"))
         
     db.session.commit()
