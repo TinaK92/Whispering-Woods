@@ -19,8 +19,8 @@ class User(db.Model, UserMixin):
     updated_at = db.Column(
         db.DateTime, nullable=False, default=db.func.now(), onupdate=db.func.now()
     )
-
     role = db.Column(db.String(20), nullable=False, default='member')
+
 
     # Relationships
     listings = db.relationship("Listing", back_populates="user")
