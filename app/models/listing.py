@@ -23,15 +23,15 @@ class Listing(db.Model):
     user = db.relationship("User", back_populates="listings")
     sizes = db.relationship(
         "Size",
-        secondary="listing_sizes",  # Specify the join table
-        back_populates="listings"
-    )
-    colors = db.relationship(
-        "Color",
-        secondary="listing_colors",  # Specify the join table
-        back_populates="listings"
+        secondary="listing_sizes",  # Use the join table name as a string
+        back_populates="listings",
     )
 
+    colors = db.relationship(
+        "Color",
+        secondary="listing_colors",  # Use the join table name as a string
+        back_populates="listings",
+    )
 
     def to_dict(self):
         return {

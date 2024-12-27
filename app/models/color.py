@@ -13,8 +13,8 @@ class Color(db.Model):
     # Relationship to Listings through the join table
     listings = db.relationship(
         "Listing",
-        secondary="listing_colors",  # Specify the join table
-        back_populates="colors"
+        secondary="listing_colors",  # Use the join table name as a string
+        back_populates="colors",
     )
 
     def to_dict(self):
