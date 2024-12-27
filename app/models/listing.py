@@ -19,8 +19,19 @@ class Listing(db.Model):
         db.DateTime, nullable=False, default=db.func.now(), onupdate=db.func.now()
     )
 
-    # Relationshipd:
+    # Relationships:
     user = db.relationship("User", back_populates="listings")
+    sizes = db.relationship(
+        "Size",
+        secondary="listing_sizes",  # Specify the join table
+        back_populates="listings"
+    )
+    colors = db.relationship(
+        "Color",
+        secondary="listing_colors",  # Specify the join table
+        back_populates="listings"
+    )
+
 
     def to_dict(self):
         return {
@@ -30,6 +41,8 @@ class Listing(db.Model):
             "description": self.description,
             "base_price": str(self.base_price),
             "image_url": self.image_url,
+            "sizes": [size.to_dict() for size in self.sizes],
+            "colors": [color.to_dict() for color in self.colors],
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }

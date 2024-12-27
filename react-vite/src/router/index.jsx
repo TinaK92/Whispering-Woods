@@ -4,6 +4,7 @@ import SignupFormPage from '../components/SignupFormPage';
 import Layout from './Layout';
 import { HomePage } from '../components/HomePage/HomePage';
 import Listings from '../components/Listings/Listings';
+import NewListing from '../components/NewListing/NewListing';
 
 export const router = createBrowserRouter([
   {
@@ -24,7 +25,11 @@ export const router = createBrowserRouter([
       {
         path: "listings",
         element: <Listings />
-      }
+      },
+      {
+        path: "listings/new",
+        element: <NewListing />
+      },
     ],
   },
 ]);
