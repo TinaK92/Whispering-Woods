@@ -15,5 +15,7 @@ listing_colors = db.Table(
         db.ForeignKey(add_prefix_for_prod("colors.id")),
         primary_key=True,
     ),
-    schema=SCHEMA if environment == "production" else None,  # Add schema for production
 )
+
+if environment == "production":
+    listing_colors.schema = SCHEMA

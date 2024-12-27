@@ -18,5 +18,7 @@ listing_sizes = Table(
         db.ForeignKey(add_prefix_for_prod("sizes.id")),
         primary_key=True,
     ),
-    schema=SCHEMA if environment == "production" else None,
 )
+
+if environment == "production":
+    listing_sizes.schema = SCHEMA
