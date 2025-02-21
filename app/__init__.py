@@ -8,6 +8,10 @@ from .models import db, User, Listing
 from .api.user_routes import user_routes
 from .api.auth_routes import auth_routes
 from .api.listing_routes import listing_routes
+from .api.size_routes import sizes_routes
+from .api.color_routes import colors_routes
+from .api.image_routes import image_routes
+
 
 from .seeds import seed_commands
 from .config import Config
@@ -31,6 +35,9 @@ app.config.from_object(Config)
 app.register_blueprint(user_routes, url_prefix='/api/users')
 app.register_blueprint(auth_routes, url_prefix='/api/auth')
 app.register_blueprint(listing_routes, url_prefix='/api/listings')
+app.register_blueprint(sizes_routes, url_prefix='/api/sizes')
+app.register_blueprint(colors_routes, url_prefix='/api/colors')
+app.register_blueprint(image_routes, url_prefix='/api/images')
 db.init_app(app)
 
 

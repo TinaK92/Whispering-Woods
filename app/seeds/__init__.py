@@ -3,6 +3,11 @@ from flask.cli import AppGroup
 from .users import seed_users, undo_users
 from .colors import seed_colors, undo_seed_colors
 from .sizes import seed_sizes, undo_seed_sizes
+from .listings import undo_listings
+from .listing_colors import seed_listing_colors, undo_listing_colors
+from .listing_sizes import seed_listing_sizes, undo_listing_sizes
+from .images import seed_images, undo_images
+from .image_colors import seed_image_colors, undo_image_colors
 
 
 # Creates a seed group to hold our commands
@@ -18,19 +23,33 @@ def seed():
         # command, which will  truncate all tables prefixed with 
         # the schema name (see comment in users.py undo_users function).
         # Make sure to add all your other model's undo functions below
+        undo_image_colors()
+        undo_images()
+        undo_listing_sizes()
+        undo_listing_colors()
         undo_seed_colors()
         undo_seed_sizes()
+        undo_listings()
         undo_users()
     seed_users()
     seed_sizes()
     seed_colors()
+    seed_listing_colors()
+    seed_listing_sizes()
+    seed_images()
+    seed_image_colors()
     # Add other seed functions here
 
 
 # Creates the `flask seed undo` command
 @seed_commands.command('undo')
 def undo():
+    undo_image_colors()
+    undo_images()
+    undo_listing_sizes()
+    undo_listing_colors()
     undo_seed_colors()
     undo_seed_sizes()
+    undo_listings()
     undo_users()
     # Add other undo functions here
