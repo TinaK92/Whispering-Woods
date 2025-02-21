@@ -71,12 +71,13 @@ export const fetchGetListing = (id) => async (dispatch) => {
 
 // Create A New Listing
 export const fetchCreateListing = (formData) => async (dispatch) => {
+  console.log("ENTERING THE THUNK")
   try {
     const response = await fetch(`/api/listings/new`, {
       method: "POST",
       body: formData,
     });
-
+    console.log("RESPONSE =========", response)
     if (response.ok) {
       const newListing = await response.json();
       dispatch(createNewListing(newListing));
