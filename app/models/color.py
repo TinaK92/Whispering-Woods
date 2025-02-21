@@ -6,22 +6,28 @@ class Color(db.Model):
         __table_args__ = {"schema": SCHEMA}
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False, unique=True)  # e.g., Red, Blue, Green
-    front_image_url = db.Column(db.String(500), nullable=False)  # Front image for the color
-    back_image_url = db.Column(db.String(500), nullable=False)   # Back image for the color
+    name = db.Column(db.String(50), nullable=False, unique=True)
+
 
     # Relationship to Listings through the join table
+    images = db.relationship(
+        "Image",
+        secondary="image_colors",
+        back_populates="colors"
+    )
     listings = db.relationship(
         "Listing",
-        secondary="listing_colors",  # Use the join table name as a string
+        secondary="listing_colors",
         back_populates="colors",
     )
 
-    def to_dict(self):
-        return {
+
+    def to_dict(self, include_images=False):
+        color_dict=  {
             "id": self.id,
             "name": self.name,
-            "front_image_url": self.front_image_url,
-            "back_image_url": self.back_image_url,
         }
+        if include_images:
+            color_dict["images"] = [image.to_dict() for image in self.images]
+        return color_dict
 
