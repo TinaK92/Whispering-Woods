@@ -16,7 +16,7 @@ class Image(db.Model):
 
     # Relationships
     # listing = db.relationship("Listing", back_populates="images")
-    colors = db.relationship("Color", back_populates="images")
+    color = db.relationship("Color", back_populates="images")
     listing = db.relationship("Listing", back_populates="images")
 
     def to_dict(self):

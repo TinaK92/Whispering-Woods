@@ -1,294 +1,169 @@
-import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { fetchCreateListing } from "../../redux/listing";
-import { fetchAllSizes } from "../../redux/size";
-import { fetchAllColors } from "../../redux/color";
-import { addNewColor } from "../../redux/color";
-import "./NewListing.css";
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { addNewColor } from '../../redux/color';
+import { fetchAllColors } from '../../redux/color';
+import { fetchCreateListing } from '../../redux/listing';
+import { fetchAllSizes } from '../../redux/size';
+import './NewListing.css';
 
 export const NewListing = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const user = useSelector((state) => state.session.user);
-  const sizes = useSelector((state) => state.sizes.sizes);
-  const colors = useSelector((state) => state.colors.colors);
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [basePrice, setBasePrice] = useState("");
-  const [selectedSizes, setSelectedSizes] = useState([]);
-  const [selectedColors, setSelectedColors] = useState([]);
-  const [newColor, setNewColor] = useState("");
-  const [colorError, setColorError] = useState(null);
-  const [imageFiles, setImageFiles] = useState({});
-  const [imageLoading, setImageLoading] = useState({});
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+	const [name, setName] = useState('');
+	const [description, setDescription] = useState('');
+	const [basePrice, setBasePrice] = useState('');
+	const [selectedColor, setSelectedColor] = useState('');
+	const [selectedSizes, setSelectedSizes] = useState([]);
+	const [frontFile, setFrontFile] = useState(null);
+	const [backFile, setBackFile] = useState(null);
 
-  useEffect(() => {
-    if (!user || user.role !== "admin") {
-      alert("You are not authorized to access this page.");
-      window.location.href = "/";
-    } else {
-      dispatch(fetchAllColors());
-      dispatch(fetchAllSizes());
-    }
-  }, [dispatch, user]);
+	const user = useSelector((state) => state.session.user);
+	const sizes = useSelector((state) => state.sizes.sizes);
+	const colors = useSelector((state) => state.colors.colors);
 
-  const validateForm = () => {
-    const errors = {};
-    if (!name.trim()) errors.name = "Name is required.";
-    if (!description.trim()) errors.description = "Description is required.";
-    if (!basePrice || isNaN(basePrice) || basePrice <= 0) {
-      errors.basePrice = "Price must be a positive number.";
-    }
-    if (selectedSizes.length === 0) {
-      errors.sizes = "At least one size must be selected.";
-    }
-    if (selectedColors.length === 0) {
-      errors.colors = "At least one color must be selected.";
-    }
+	useEffect(() => {
+		dispatch(fetchAllSizes());
+		dispatch(fetchAllColors());
+	}, [dispatch]);
 
-    selectedColors.forEach((colorId) => {
-      const images = imageFiles[colorId] || {};
-      if (!images.front) {
-        errors[
-          `frontImage_${colorId}`
-        ] = `Front image is required for color ID ${colorId}.`;
-      }
-      if (!images.back) {
-        errors[
-          `backImage_${colorId}`
-        ] = `Back image is required for color ID ${colorId}.`;
-      }
-    });
+	const handleSizeCheckboxChange = (e, sizeId) => {
+		if (e.target.checked) {
+			// If checked, add sizeId to the array
+			setSelectedSizes((prev) => [...prev, sizeId]);
+		} else {
+			// If unchecked, remove sizeId
+			setSelectedSizes((prev) => prev.filter((id) => id !== sizeId));
+		}
+	};
 
-    return errors;
-  };
+	const handleColorChange = (e) => {
+		setSelectedColor(e.target.value);
+	};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+	const handleSubmit = async (e) => {
+		e.preventDefault();
 
-    const formErrors = validateForm();
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      setIsSubmitting(false);
-      return;
-    }
+		const formData = new FormData();
+		formData.append('name', name);
+		formData.append('description', description);
+		formData.append('base_price', basePrice);
 
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("base_price", basePrice);
-    selectedSizes.forEach((size) => formData.append("sizes", size));
-    // 🔹 Fix: Append images correctly (without nested keys)
-    selectedColors.forEach((colorId) => {
-        if (imageFiles[colorId]?.front) {
-            formData.append("front_image", imageFiles[colorId].front);
-        }
-        if (imageFiles[colorId]?.back) {
-            formData.append("back_image", imageFiles[colorId].back);
-        }
-    });
-    // Debugging Step 1: Log FormData contents
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}:`, pair[1]);
-    }
+		// Multiple sizes:
+		selectedSizes.forEach((sizeId) => {
+			formData.append('sizes', sizeId); // each appended as "sizes"
+		});
 
-    console.log("FORM DATA ========", formData);
+		// Single color:
+		formData.append('color', selectedColor);
 
+		// Two images:
+		if (frontFile) formData.append('front_image', frontFile);
+		if (backFile) formData.append('back_image', backFile);
 
-      const response = await dispatch(fetchCreateListing(formData));
-      alert("Listing created successfully!");
-      if (response.errors) {
-        setErrors(response.errors)
-      } else {
-      setName("");
-      setDescription("");
-      setBasePrice("");
-      setSelectedSizes([]);
-      setSelectedColors([]);
-      setImageFiles({});
-      setErrors({});
-      navigate("/listings");
-      }
-  };
+		// If you have a Redux thunk or similar for creation:
+		const response = await dispatch(fetchCreateListing(formData));
+		if (response.errors) {
+			// handle or display errors
+			console.log('Errors creating listing:', response.errors);
+		} else {
+			// success — maybe redirect
+			console.log('Listing created successfully!', response.listing);
+			navigate('/listings');
+		}
 
-  const handleSizeChange = (e) => {
-    const { value, checked } = e.target;
-    const sizeId = parseInt(value);
+		// For demo, just log the FormData keys & values:
+		for (let pair of formData.entries()) {
+			console.log(pair[0], pair[1]);
+		}
+	};
 
-    if (checked) {
-      setSelectedSizes((prev) => [...prev, sizeId]);
-    } else {
-      setSelectedSizes((prev) => prev.filter((id) => id !== sizeId));
-    }
-  };
+	return (
+		<form
+			onSubmit={handleSubmit}
+			encType='multipart/form-data'
+		>
+			<h2>Create a New Listing</h2>
 
-  const handleColorChange = (e) => {
-    const { value, checked } = e.target;
-    const colorId = parseInt(value);
+			<label>Listing Name</label>
+			<input
+				type='text'
+				value={name}
+				onChange={(e) => setName(e.target.value)}
+				required
+			/>
 
-    if (checked) {
-      setSelectedColors((prev) => [...prev, colorId]);
-    } else {
-      setSelectedColors((prev) => prev.filter((id) => id !== colorId));
-      setImageFiles((prev) => {
-        const updated = { ...prev };
-        delete updated[colorId];
-        return updated;
-      });
-    }
-  };
+			<label>Description</label>
+			<textarea
+				value={description}
+				onChange={(e) => setDescription(e.target.value)}
+				required
+			/>
 
-  const handleImageChange = (colorId, type, file) => {
-    setImageFiles((prev) => ({
-      ...prev,
-      [colorId]: {
-        ...prev[colorId],
-        [type]: file,
-      },
-    }));
-  };
+			<label>Base Price</label>
+			<input
+				type='number'
+				step='0.01'
+				value={basePrice}
+				onChange={(e) => setBasePrice(e.target.value)}
+				required
+			/>
 
-  const handleAddColor = async () => {
-    setColorError(null);
+			{/* Multiple sizes */}
+			<label>Sizes</label>
+			{sizes.map((size) => (
+				<div key={size.id}>
+					<label>
+						<input
+							type='checkbox'
+							value={size.id}
+							checked={selectedSizes.includes(size.id)}
+							onChange={(e) => handleSizeCheckboxChange(e, size.id)}
+						/>
+						{size.name}
+					</label>
+				</div>
+			))}
 
-    if (!newColor.trim()) {
-      setColorError("Color name cannot be empty.");
-      return;
-    }
+			{/* Single color */}
+			<label>Color</label>
+			<select
+				value={selectedColor}
+				onChange={handleColorChange}
+				required
+			>
+				<option value=''>-- Select a color --</option>
+				{colors?.map((color) => (
+					<option
+						key={color.id}
+						value={color.id}
+					>
+						{color.name}
+					</option>
+				))}
+			</select>
 
-    try {
-      const addedColor = await dispatch(addNewColor({ name: newColor }));
-      setSelectedColors((prev) => [...prev, addedColor.id]); // Automatically select the new color
-      setNewColor(""); // Reset the input field
-      alert(`${addedColor.name} has been added and selected!`);
-    } catch (error) {
-      setColorError(error.message);
-    }
-  };
+			{/* Two images: Front / Back */}
+			<label>Front Image</label>
+			<input
+				type='file'
+				accept='image/*'
+				onChange={(e) => setFrontFile(e.target.files[0])}
+				required
+			/>
 
-  if (!user || user.role !== "admin") {
-    return null;
-  }
+			<label>Back Image</label>
+			<input
+				type='file'
+				accept='image/*'
+				onChange={(e) => setBackFile(e.target.files[0])}
+				required
+			/>
 
-  return (
-    <div>
-      <h1>Create New Listing</h1>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <div>
-          <label>Name</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          {errors.name && <p className="error">{errors.name}</p>}
-        </div>
-        <div>
-          <label>Description</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          {errors.description && <p className="error">{errors.description}</p>}
-        </div>
-        <div>
-          <label>Base Price</label>
-          <input
-            type="text"
-            id="basePrice"
-            value={basePrice}
-            onChange={(e) => setBasePrice(e.target.value)}
-          />
-          {errors.basePrice && <p className="error">{errors.basePrice}</p>}
-        </div>
-        <div>
-          <label>Sizes</label>
-          <div>
-            {sizes.map((size) => (
-              <div key={size.id}>
-                <label>{size.name}</label>
-                <input
-                  type="checkbox"
-                  value={size.id}
-                  checked={selectedSizes.includes(size.id)}
-                  onChange={handleSizeChange}
-                />
-              </div>
-            ))}
-          </div>
-          {errors.sizes && <p className="error">{errors.sizes}</p>}
-        </div>
-        <div>
-          <label>Colors</label>
-          <div>
-            {colors.map((color) => (
-              <div key={color.id}>
-                <label>{color.name}</label>
-                <input
-                  type="checkbox"
-                  value={color.id}
-                  checked={selectedColors.includes(color.id)}
-                  onChange={handleColorChange}
-                />
-                {selectedColors.includes(color.id) && (
-                  <div>
-                    <label>Front Image</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        handleImageChange(color.id, "front", e.target.files[0])
-                      }
-                    />
-                    {errors[`frontImage_${color.id}`] && (
-                      <p className="error">
-                        {errors[`frontImage_${color.id}`]}
-                      </p>
-                    )}
-                    <label>Back Image</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        handleImageChange(color.id, "back", e.target.files[0])
-                      }
-                    />
-                    {errors[`backImage_${color.id}`] && (
-                      <p className="error">{errors[`backImage_${color.id}`]}</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          {errors.colors && <p className="error">{errors.colors}</p>}
-        </div>
-        <div>
-          <label>New Color</label>
-          <input
-            type="text"
-            placeholder="Enter new color"
-            value={newColor}
-            onChange={(e) => setNewColor(e.target.value)}
-          />
-          <button type="button" onClick={handleAddColor}>
-            Add Color
-          </button>
-          {colorError && <p className="error">{colorError}</p>}
-        </div>
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Create Listing"}
-        </button>
-      </form>
-    </div>
-  );
+			<button type='submit'>Create Listing</button>
+		</form>
+	);
 };
 
 export default NewListing;

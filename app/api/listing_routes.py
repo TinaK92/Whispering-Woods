@@ -2,8 +2,8 @@ from flask import Blueprint, request, jsonify, current_app as app
 from app.models import Listing, db, Color, Size, Image
 from flask_login import current_user, login_required
 from app.forms.listing_form import ListingForm
-from app.forms.ImageUploadForm import ImageUploadForm
 from dotenv import load_dotenv
+from app.api.aws_helpers import upload_file_to_s3, get_unique_filename
 
 # Loading my environment variables from my .env
 load_dotenv()
@@ -33,8 +33,8 @@ def get_listing(id):
 @listing_routes.route("/new", methods=["POST"])
 @login_required
 def create_listing():
-    print("Request form data:", request.form)
-    print("Request files:", request.files)
+    # print("Request form data:", request.form)
+    # print("Request files:", request.files)
 
     form = ListingForm()
     form['csrf_token'].data = request.cookies['csrf_token']
@@ -42,68 +42,67 @@ def create_listing():
     if not form.validate_on_submit():
         print("Form validation errors:", form.errors)
         return {"errors": form.errors}, 400
+    
+    front_file = form.front_image.data
+    if not front_file:
+        return {"errors": {"images": "Front file is missing"}}, 400
+    back_file = form.back_image.data
+    if not back_file:
+        return {"errors": {"images": "Back file is missing"}}, 400
 
-    try:
-        # 🔹 Check that images are present before validation
-        if "front_image" not in request.files or "back_image" not in request.files:
-            return {"errors": {"images": ["Front and back images are required."]}}, 400
+    listing = Listing(
+        user_id=current_user.id,
+        name=form.name.data,
+        description=form.description.data,
+        base_price=form.base_price.data,
+    )
+    db.session.add(listing)
+    db.session.flush()
 
-        front_image_file = request.files["front_image"]
-        back_image_file = request.files["back_image"]
+    for size_id in form.sizes.data:
+        size_obj = Size.query.get(size_id)
+        if size_obj:
+            listing.sizes.append(size_obj)
+    
+    color_id = form.color.data
+    color_obj = Color.query.get(color_id)
+    if not color_obj:
+        return {"errors": {"color": "Invalid color chosen"}}, 400
 
-        # 🔹 Validate Image Form
-        image_form = ImageUploadForm()
-        image_form['csrf_token'].data = request.cookies['csrf_token']
-        image_form.front_image.data = front_image_file
-        image_form.back_image.data = back_image_file
+    
+    # if not front_file or back_file:
+    #     return {"errors": {"images": "Front and back images are required"}}, 400
+    
+    front_filename = get_unique_filename(front_file.filename)
+    back_filename = get_unique_filename(back_file.filename)
+    front_file.filename = front_filename
+    back_file.filename = back_filename
+    uploaded_front = upload_file_to_s3(front_file)
+    uploaded_back  = upload_file_to_s3(back_file)
 
-        if not image_form.validate():
-            print("Image Form Errors:", image_form.errors)
-            return {"errors": image_form.errors}, 400
+    front_image = Image(
+        listing_id=listing.id,
+        color_id=color_obj.id,
+        image_url=uploaded_front["url"],
+        front=True,
+        back=False,
+    )
+    back_image = Image(
+        listing_id=listing.id,
+        color_id=color_obj.id,
+        image_url=uploaded_back["url"],
+        front=False,
+        back=True,
+    )
+    db.session.add(front_image)
+    db.session.add(back_image)
 
-        # 🔹 Upload to S3
-        uploaded_front = upload_file_to_s3(front_image_file)
-        uploaded_back = upload_file_to_s3(back_image_file)
+    db.session.commit()
 
-        if "url" not in uploaded_front or "url" not in uploaded_back:
-            return {"errors": "File upload failed."}, 400
-
-        # 🔹 Create Listing
-        listing = Listing(
-            user_id=current_user.id,
-            name=form.name.data,
-            description=form.description.data,
-            base_price=form.base_price.data
-        )
-        db.session.add(listing)
-        db.session.flush()
-
-        # 🔹 Save Images with Correct Associations
-        front_image = Image(
-            listing_id=listing.id,
-            color_id=form.colors.data[0],  # Ensure this is correctly assigned
-            image_url=uploaded_front["url"],
-            front=True,
-            back=False
-        )
-        back_image = Image(
-            listing_id=listing.id,
-            color_id=form.colors.data[0],
-            image_url=uploaded_back["url"],
-            front=False,
-            back=True
-        )
-        db.session.add(front_image)
-        db.session.add(back_image)
-
-        db.session.commit()
-        return {"message": "Listing created successfully", "listing": listing.to_dict()}, 201
-
-    except Exception as e:
-        db.session.rollback()
-        app.logger.error(f"Error creating listing: {e}")
-        return {"errors": "An error occurred while creating the listing."}, 500
-
+    return {
+        "message": "Listing created successfully",
+        "listing": listing.to_dict()
+    }, 201
 
 # UPDATE A LISTING ----------------------------------------
 @listing_routes.route("/<int:id>/edit", methods=["PUT"])
