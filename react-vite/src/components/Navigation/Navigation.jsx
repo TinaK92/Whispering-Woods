@@ -12,7 +12,7 @@ function Navigation() {
         <Link to="/">Home</Link>
       </div>
       <div>
-        <Link>Adopt</Link>
+        <Link to="/adoptions">Adopt</Link>
       </div>
       <div>
         <Link to="/listings">Shop</Link>

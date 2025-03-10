@@ -12,11 +12,12 @@ class Adoption(db.Model):
         db.Integer, db.ForeignKey(add_prefix_for_prod("users.id")), nullable=False
     )
     animal_name = db.Column(db.String(255), nullable=False)
-    animal_age = db.Column(db.Integer, nullable=False)
+    animal_age = db.Column(db.String(255), nullable=False)
     animal_color = db.Column(db.String(255), nullable=False)
     animal_breed = db.Column(db.String(255), nullable=False)
     animal_bio = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(255), nullable=False)
+    adoption_fee = db.Column(db.Float, nullable=False, default=0.0) 
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.now())
     updated_at = db.Column(
         db.DateTime, nullable=False, default=db.func.now(), onupdate=db.func.now()
@@ -40,6 +41,7 @@ class Adoption(db.Model):
             "animal_breed": self.animal_breed,
             "animal_bio": self.animal_bio,
             "image_url": self.image_url,
+            "adoption_fee": self.adoption_fee,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

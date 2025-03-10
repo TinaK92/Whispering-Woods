@@ -1,8 +1,8 @@
 """init
 
-Revision ID: e299783480f9
+Revision ID: a44dabb58c5b
 Revises: 
-Create Date: 2025-03-09 17:44:52.486904
+Create Date: 2025-03-10 08:31:30.563620
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e299783480f9'
+revision = 'a44dabb58c5b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -59,6 +59,7 @@ def upgrade():
     sa.Column('animal_breed', sa.String(length=255), nullable=False),
     sa.Column('animal_bio', sa.Text(), nullable=False),
     sa.Column('image_url', sa.String(length=255), nullable=False),
+    sa.Column('adoption_fee', sa.Float(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
@@ -97,7 +98,7 @@ def upgrade():
     sa.Column('front', sa.Boolean(), nullable=False),
     sa.Column('back', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['color_id'], ['colors.id'], ),
-    sa.ForeignKeyConstraint(['listing_id'], ['listings.id'], ),
+    sa.ForeignKeyConstraint(['listing_id'], ['listings.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('listing_colors',

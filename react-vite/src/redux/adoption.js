@@ -92,6 +92,28 @@ export const fetchAddAnimal = (formData) => async (dispatch) => {
     }
 };
 
+// EDIT/UPDATE AN EXISTING ANIMAL
+export const fetchUpdateAnimal = (id) => async (dispatch) => {
+    try {
+        const response = await fetch(`/api/adoptions/${id}/edit`, {
+            method: 'PUT',
+            body: formData,
+        });
+
+        if (response.ok) {
+            const updatedAnimal = await response.json();
+            dispatch(updateAnimal(updatedAnimal));
+            return updatedAnimal; 
+        } else {
+            const errorMessage = await response.json();
+            return { errors: errorMessage };
+        }
+    } catch (error) {
+        console.error('Error occurred updating the animal:', error);
+        return { errors: 'An unexpected error has occurred' };
+    }
+};
+
 // DELETE A ANIMAL FROM ADOPTION LIST
 export const fetchDeleteAnimal = (id) => async (dispatch) => {
     try {

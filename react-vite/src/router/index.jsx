@@ -7,6 +7,9 @@ import Listings from "../components/Listings/Listings";
 import NewListing from "../components/NewListing/NewListing";
 import EditListing from "../components/EditListing/EditListing";
 import ListingDetails from "../components/ListingDetails/ListingDetails";
+import Adoptions from "../components/Adoption/Adoption";
+import NewAnimal from "../components/NewAdoption/NewAdoption";
+
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +43,18 @@ export const router = createBrowserRouter([
         path: "listings/:id/edit",
         element: <EditListing />,
       },
+      {
+        path: "adoptions",
+        element: <Adoptions />,
+      },
+      {
+        path: "adoptions/new",
+        element: <NewAnimal />,
+      },
+      // {
+      //   path: "adoptions/:id",
+      //   element: <AnimalDetails />,
+      // },
     ],
   },
 ]);
