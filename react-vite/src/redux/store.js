@@ -9,12 +9,14 @@ import sessionReducer from "./session";
 import listingsReducer from "./listing";
 import sizesReducer from "./size";
 import colorsReducer from "./color";
+import adoptionReducer from "./adoption";
 
 const rootReducer = combineReducers({
   session: sessionReducer,
   listings: listingsReducer,
   sizes: sizesReducer,
   colors: colorsReducer,
+  adoptions: adoptionReducer,
 });
 
 let enhancer;

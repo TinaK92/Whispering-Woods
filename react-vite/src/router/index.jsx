@@ -1,10 +1,12 @@
-import { createBrowserRouter } from 'react-router-dom';
-import LoginFormPage from '../components/LoginFormPage';
-import SignupFormPage from '../components/SignupFormPage';
-import Layout from './Layout';
-import { HomePage } from '../components/HomePage/HomePage';
-import Listings from '../components/Listings/Listings';
-import NewListing from '../components/NewListing/NewListing';
+import { createBrowserRouter } from "react-router-dom";
+import LoginFormPage from "../components/LoginFormPage";
+import SignupFormPage from "../components/SignupFormPage";
+import Layout from "./Layout";
+import { HomePage } from "../components/HomePage/HomePage";
+import Listings from "../components/Listings/Listings";
+import NewListing from "../components/NewListing/NewListing";
+import EditListing from "../components/EditListing/EditListing";
+import ListingDetails from "../components/ListingDetails/ListingDetails";
 
 export const router = createBrowserRouter([
   {
@@ -24,11 +26,19 @@ export const router = createBrowserRouter([
       },
       {
         path: "listings",
-        element: <Listings />
+        element: <Listings />,
       },
       {
         path: "listings/new",
-        element: <NewListing />
+        element: <NewListing />,
+      },
+      {
+        path: "listings/:id",
+        element: <ListingDetails />,
+      },
+      {
+        path: "listings/:id/edit",
+        element: <EditListing />,
       },
     ],
   },

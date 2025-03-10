@@ -51,11 +51,18 @@ export const clearSelected = () => {
 
 // Get All Listings
 export const fetchAllListings = () => async (dispatch) => {
-  const response = await fetch(`/api/listings`);
-  if (response.ok) {
-    const listings = await response.json();
-    dispatch(getAllListings(listings));
-    return listings;
+  try {
+    const response = await fetch(`/api/listings`);
+    if (response.ok) {
+      const data = await response.json();
+      const listings = data.listings || data;
+      dispatch(getAllListings(listings));
+      return listings;
+    } else {
+      console.error("Failed to fetch listings: ", response.statusText)
+    }
+  } catch (error) {
+    console.error("Error fetching listings:", error);
   }
 };
 

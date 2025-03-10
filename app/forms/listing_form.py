@@ -24,3 +24,7 @@ class ListingForm(FlaskForm):
 
         # load all colors
         self.color.choices = [(c.id, c.name) for c in Color.query.all()]
+
+
+
+        

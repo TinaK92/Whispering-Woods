@@ -2,13 +2,10 @@ from .db import db, environment, SCHEMA, add_prefix_for_prod
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
-
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
-
     if environment == "production":
         __table_args__ = {'schema': SCHEMA}
-
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(25), nullable=True)
     last_name = db.Column(db.String(25), nullable=True)
@@ -21,9 +18,10 @@ class User(db.Model, UserMixin):
     )
     role = db.Column(db.String(20), nullable=False, default='member')
 
-
     # Relationships
     listings = db.relationship("Listing", back_populates="user")
+
+    adoptions = db.relationship("Adoption", back_populates="user", cascade="all, delete-orphan")
 
     @property
     def password(self):

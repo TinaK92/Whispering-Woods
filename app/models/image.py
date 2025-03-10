@@ -8,7 +8,7 @@ class Image(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, 
     autoincrement=True)
-    listing_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod("listings.id")))
+    listing_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod("listings.id"), ondelete="CASCADE"))
     color_id = db.Column(db.ForeignKey(add_prefix_for_prod("colors.id")), nullable=False)
     image_url = db.Column(db.String, nullable=False)
     front = db.Column(db.Boolean, nullable=False)

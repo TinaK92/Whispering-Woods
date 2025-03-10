@@ -37,12 +37,12 @@ def create_listing():
     # print("Request files:", request.files)
 
     form = ListingForm()
-    form['csrf_token'].data = request.cookies['csrf_token']
+    form["csrf_token"].data = request.cookies["csrf_token"]
 
     if not form.validate_on_submit():
         print("Form validation errors:", form.errors)
         return {"errors": form.errors}, 400
-    
+
     front_file = form.front_image.data
     if not front_file:
         return {"errors": {"images": "Front file is missing"}}, 400
@@ -63,22 +63,21 @@ def create_listing():
         size_obj = Size.query.get(size_id)
         if size_obj:
             listing.sizes.append(size_obj)
-    
+
     color_id = form.color.data
     color_obj = Color.query.get(color_id)
     if not color_obj:
         return {"errors": {"color": "Invalid color chosen"}}, 400
 
-    
     # if not front_file or back_file:
     #     return {"errors": {"images": "Front and back images are required"}}, 400
-    
+
     front_filename = get_unique_filename(front_file.filename)
     back_filename = get_unique_filename(back_file.filename)
     front_file.filename = front_filename
     back_file.filename = back_filename
     uploaded_front = upload_file_to_s3(front_file)
-    uploaded_back  = upload_file_to_s3(back_file)
+    uploaded_back = upload_file_to_s3(back_file)
 
     front_image = Image(
         listing_id=listing.id,
@@ -101,8 +100,9 @@ def create_listing():
 
     return {
         "message": "Listing created successfully",
-        "listing": listing.to_dict()
+        "listing": listing.to_dict(),
     }, 201
+
 
 # UPDATE A LISTING ----------------------------------------
 @listing_routes.route("/<int:id>/edit", methods=["PUT"])
@@ -133,11 +133,34 @@ def update_listing(id):
                 listing.sizes.append(size)
 
         # Update colors
-        listing.colors = []
-        for color_id in form.colors.data:
-            color = Color.query.get(color_id)
-            if color:
-                listing.colors.append(color)
+        # color_id = form.color.data
+        # color_obj = Color.query.get(color_id)
+        # if not color_obj:
+        #     return {"errors": {"color": "Invalid color chosen"}}, 400
+        
+        # front_image = Image.query.get(listing.id)
+        # front_image.color_id = color_id
+        # back_image = Image.query.get(listing.id)
+        # back_image.color_id = color_id
+
+        # Update color
+        color_id = form.color.data
+        color_obj = Color.query.get(color_id)
+        if not color_obj:
+            return {"errors": {"color": "Invalid color chosen"}}, 400
+
+        # Update front image color
+        front_image = Image.query.filter_by(listing_id=listing.id, front=True).first()
+        if front_image:
+            front_image.color_id = color_id
+
+        # Update back image color
+        back_image = Image.query.filter_by(listing_id=listing.id, back=True).first()
+        if back_image:
+            back_image.color_id = color_id
+
+        # db.session.add(front_image)
+        # db.session.add(back_image)
 
         db.session.commit()
         return listing.to_dict(), 200

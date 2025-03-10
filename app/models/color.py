@@ -11,10 +11,10 @@ class Color(db.Model):
     listings = db.relationship(
         "Listing",
         secondary="listing_colors",
-        back_populates="colors",
+        back_populates="colors"
     )
 
-    images  = db.relationship("Image", back_populates="color")
+    images  = db.relationship("Image", back_populates="color", cascade="all, delete-orphan")
 
 
     def to_dict(self, include_images=False):

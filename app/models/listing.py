@@ -1,7 +1,4 @@
 from .db import db, environment, SCHEMA, add_prefix_for_prod
-
-
-
 class Listing(db.Model):
     __tablename__ = "listings"
     if environment == "production":
@@ -15,8 +12,7 @@ class Listing(db.Model):
     description = db.Column(db.Text, nullable=False)
     base_price = db.Column(db.Numeric(10, 2), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.now())
-    updated_at = db.Column(
-        db.DateTime, nullable=False, default=db.func.now(), onupdate=db.func.now()
+    updated_at = db.Column(db.DateTime, nullable=False, default=db.func.now(), onupdate=db.func.now()
     )
 
     # Relationships:
@@ -33,7 +29,7 @@ class Listing(db.Model):
         back_populates="listings",
         cascade="all"
     )
-    images = db.relationship("Image", back_populates="listing")
+    images = db.relationship("Image", back_populates="listing", cascade="all, delete-orphan")
 
     def to_dict(self):
         return {
