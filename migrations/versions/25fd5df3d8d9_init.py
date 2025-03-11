@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 1db6baa45d25
+Revision ID: 25fd5df3d8d9
 Revises: 
-Create Date: 2025-03-10 10:46:45.144374
+Create Date: 2025-03-11 06:54:41.294411
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1db6baa45d25'
+revision = '25fd5df3d8d9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -65,12 +65,20 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('carts',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('listings',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('description', sa.Text(), nullable=False),
     sa.Column('base_price', sa.Numeric(precision=10, scale=2), nullable=False),
+    sa.Column('quantity', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
@@ -89,6 +97,16 @@ def upgrade():
     sa.ForeignKeyConstraint(['adoption_id'], ['adoptions.id'], ),
     sa.ForeignKeyConstraint(['category_id'], ['categories.id'], ),
     sa.PrimaryKeyConstraint('adoption_id', 'category_id')
+    )
+    op.create_table('cart_items',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('cart_id', sa.Integer(), nullable=False),
+    sa.Column('listing_id', sa.Integer(), nullable=False),
+    sa.Column('quantity', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['cart_id'], ['carts.id'], ),
+    sa.ForeignKeyConstraint(['listing_id'], ['listings.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('images',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
@@ -123,9 +141,11 @@ def downgrade():
     op.drop_table('listing_sizes')
     op.drop_table('listing_colors')
     op.drop_table('images')
+    op.drop_table('cart_items')
     op.drop_table('animal_categories')
     op.drop_table('adoption_images')
     op.drop_table('listings')
+    op.drop_table('carts')
     op.drop_table('adoptions')
     op.drop_table('users')
     op.drop_table('sizes')

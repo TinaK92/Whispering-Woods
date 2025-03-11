@@ -55,6 +55,7 @@ def create_listing():
         name=form.name.data,
         description=form.description.data,
         base_price=form.base_price.data,
+        quantity=form.quantity.data,
     )
     db.session.add(listing)
     db.session.flush()
@@ -90,6 +91,7 @@ def create_listing():
         listing_id=listing.id,
         color_id=color_obj.id,
         image_url=uploaded_back["url"],
+        
         front=False,
         back=True,
     )

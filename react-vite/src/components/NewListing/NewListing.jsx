@@ -14,6 +14,7 @@ export const NewListing = () => {
 	const [name, setName] = useState('');
 	const [description, setDescription] = useState('');
 	const [basePrice, setBasePrice] = useState('');
+	const [quantity, setQuantity] = useState('')
 	const [selectedColor, setSelectedColor] = useState('');
 	const [selectedSizes, setSelectedSizes] = useState([]);
 	const [frontFile, setFrontFile] = useState(null);
@@ -49,6 +50,7 @@ export const NewListing = () => {
 		formData.append('name', name);
 		formData.append('description', description);
 		formData.append('base_price', basePrice);
+		formData.append('quantity', quantity);
 
 		// Multiple sizes:
 		selectedSizes.forEach((sizeId) => {
@@ -125,7 +127,15 @@ export const NewListing = () => {
 					</label>
 				</div>
 			))}
-
+			<label>Quantity</label>
+			<input
+				type='number'
+				step='1'
+				min='1'
+				value={quantity}
+				onChange={(e) => setQuantity(e.target.value ? parseInt(e.target.value, 10) : '')}
+				required
+			/>
 			{/* Single color */}
 			<label>Color</label>
 			<select

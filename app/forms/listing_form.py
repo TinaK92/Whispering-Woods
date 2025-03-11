@@ -1,12 +1,13 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, DecimalField, SelectMultipleField, FormField, SelectField, FileField
-from wtforms.validators import DataRequired, Optional, URL
+from wtforms import StringField, TextAreaField, DecimalField,  IntegerField, SelectMultipleField, FormField, SelectField, FileField
+from wtforms.validators import DataRequired, Optional, URL, NumberRange
 from flask_wtf.file import FileRequired,FileAllowed
 
 class ListingForm(FlaskForm):
     name = StringField("Listing Title", validators=[DataRequired()])
     description = TextAreaField("Listing Description", validators=[DataRequired()])
     base_price = DecimalField("Price", places=2, validators=[DataRequired()])
+    quantity = IntegerField("Quantity", validators=[DataRequired(), NumberRange(min=1)])
     sizes = SelectMultipleField("Sizes", coerce=int)  # Expecting a list of integers
     color = SelectField("Color", coerce=int)  # Expecting a list of integers
     front_image = FileField("Front Image", validators=[FileRequired()])

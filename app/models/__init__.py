@@ -10,6 +10,9 @@ from .adoption import Adoption
 from .adoption_image import AdoptionImage
 from .category import Category
 from .animal_category import animal_categories
+from .cart import Cart
+from .cart_items import CartItem
+
 
 
 

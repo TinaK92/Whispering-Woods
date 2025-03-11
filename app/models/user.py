@@ -23,6 +23,8 @@ class User(db.Model, UserMixin):
 
     adoptions = db.relationship("Adoption", back_populates="user", cascade="all, delete-orphan")
 
+    cart = db.relationship('Cart', back_populates='user', uselist=False, cascade="all, delete-orphan")
+
     @property
     def password(self):
         return self.hashed_password

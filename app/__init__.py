@@ -13,6 +13,7 @@ from .api.color_routes import colors_routes
 from .api.image_routes import image_routes
 from .api.adoption_routes import adoption_routes
 from .api.category_routes import category_routes
+from .api.shopping_cart_routes import cart_routes
 
 
 from .seeds import seed_commands
@@ -42,6 +43,7 @@ app.register_blueprint(colors_routes, url_prefix='/api/colors')
 app.register_blueprint(image_routes, url_prefix='/api/images')
 app.register_blueprint(category_routes, url_prefix='/api/categories')
 app.register_blueprint(adoption_routes, url_prefix='/api/adoptions')
+app.register_blueprint(cart_routes, url_prefix='/api/cart' )
 db.init_app(app)
 
 

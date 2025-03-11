@@ -11,6 +11,7 @@ class Listing(db.Model):
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
     base_price = db.Column(db.Numeric(10, 2), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.now())
     updated_at = db.Column(db.DateTime, nullable=False, default=db.func.now(), onupdate=db.func.now()
     )
@@ -31,6 +32,10 @@ class Listing(db.Model):
     )
     images = db.relationship("Image", back_populates="listing", cascade="all, delete-orphan")
 
+    cart_items = db.relationship('CartItem', back_populates='listing' )
+
+    
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -41,6 +46,7 @@ class Listing(db.Model):
             "sizes": [size.to_dict() for size in self.sizes],  # Assuming `Size` has a `to_dict` method
             "colors": [color.to_dict() for color in self.colors],  # Assuming `Color` has a `to_dict` method
             "images": [image.to_dict() for image in self.images],
+            'quantity': self.quantity,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
