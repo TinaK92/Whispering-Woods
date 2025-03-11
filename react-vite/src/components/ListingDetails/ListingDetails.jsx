@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchGetListing, fetchDeleteListing } from "../../redux/listing";
 
+
 export const ListingDetails = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -29,6 +30,10 @@ export const ListingDetails = () => {
         navigate('/listings')
     }
 
+    const handleAddToCart = (listingId) => {
+        dispatch()
+    }
+
     return (
         <div className="listing-details-div">
             <img 
@@ -40,6 +45,13 @@ export const ListingDetails = () => {
             <p className="listing-description">{listing.description}</p>
             <p className="listing-price">${listing.base_price}</p>
             <p className="listing-color">{listing.color}</p>
+            <p className="listing-quantity">In Stock: {listing.quantity}</p>
+            <div className="cart-button">
+                <button
+               
+                >Add To Cart
+                </button>
+            </div>
             <div className="buttons-div">
                 <button
                     onClick={() => handleEdit(listing.id)}
