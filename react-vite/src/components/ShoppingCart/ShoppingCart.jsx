@@ -1,12 +1,9 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCart } from '../../redux/shoppingCart';
+import { fetchCart } from '../../redux/cart';
 import { useModal } from '../../context/Modal';
-import {
-	fetchUpdateCartItem,
-	fetchDeleteItemFromCart,
-	fetchClearCart,
-} from '../../redux/shoppingCart';
+
+
 
 export const ShoppingCart = () => {
     const dispatch = useDispatch();
@@ -38,9 +35,16 @@ export const ShoppingCart = () => {
         }, 0).toFixed(2);
     };
 
-    const handleTotal = () => {
-        return cart.cart_items.reduce((total, item) => {
-            
-        })
-    }
+
+    const handleCheckout = () => {
+        dispatch(fetchClearCart());
+    };
+
+    return (
+        <div className='shopping-cart'>
+
+        </div>
+    )
 }
+
+export default ShoppingCart;

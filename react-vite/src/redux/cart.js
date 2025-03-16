@@ -122,7 +122,7 @@ export const fetchClearCart = () => async (dispatch) => {
     if (response.ok) {
         dispatch(clearCart());
     } else {
-        console.error('Failed to clear items from cart:' response.statusText);
+        console.error('Failed to clear items from cart:', response.statusText);
     }
 };
 
@@ -171,3 +171,4 @@ export default function cartReducer(state = initialState, action) {
             return state;
     }
 }
+

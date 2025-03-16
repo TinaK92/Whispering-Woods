@@ -9,6 +9,7 @@ import EditListing from "../components/EditListing/EditListing";
 import ListingDetails from "../components/ListingDetails/ListingDetails";
 import Adoptions from "../components/Adoption/Adoption";
 import NewAnimal from "../components/NewAdoption/NewAdoption";
+import ShoppingCart from "../components/ShoppingCart/ShoppingCart";
 
 
 export const router = createBrowserRouter([
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
       {
         path: "listings/:id/edit",
         element: <EditListing />,
+      },
+      {
+        path: "/current/shopping-cart",
+        element: <ShoppingCart />,
       },
       {
         path: "adoptions",
