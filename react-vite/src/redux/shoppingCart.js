@@ -43,7 +43,7 @@ const clearCart = () => {
 // THUNKS 
 // GET CART
 export const fetchCart = (id) => async (dispatch) => {
-    const response = await fetch(`/api/cart/${id}`);
+    const response = await fetch(`/api/shopping-cart/${id}`);
 
     if (response.ok) {
         const cart = await response.json();
@@ -56,7 +56,7 @@ export const fetchCart = (id) => async (dispatch) => {
 // ADD ITEM TO CART
 export const fetchAddToCart = (listingId, quantity = 1) => async (dispatch, getState) => {
     const state = getState();
-    const currentItem = state.cart.cart.cart_items.find((item) => listingId.id === listingId);
+    const currentItem = state.cart.cart.cart_items.find((item) => item.listingId.id === listingId);
 
     const listing = state.listings.AllListings.find((listing) => listing.id === listingId);
 
@@ -71,7 +71,7 @@ export const fetchAddToCart = (listingId, quantity = 1) => async (dispatch, getS
         console.error('Quantity exceeds available stock quantity');
         return;
     }
-    const response = await fetch(`/api/cart/add`, {
+    const response = await fetch(`/api/shopping-cart/add`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json',
         },
@@ -88,7 +88,7 @@ export const fetchAddToCart = (listingId, quantity = 1) => async (dispatch, getS
 
 // UPDATE ITEM IN CART
 export const fetchUpdateCartItem = (itemId, quantity) => async (dispatch) => {
-    const response = await fetch(`/api/cart/${itemId}`, {
+    const response = await fetch(`/api/shopping-cart/${itemId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ export const fetchUpdateCartItem = (itemId, quantity) => async (dispatch) => {
 
 // REMOVE ITEM FROM CART
 export const fetchDeleteItemFromCart = () => async (dispatch) => {
-    const response = await fetch(`/api/cart/${itemId}`, {
+    const response = await fetch(`/api/shopping-cart/${itemId}`, {
         method: 'DELETE',
     });
 
@@ -115,7 +115,7 @@ export const fetchDeleteItemFromCart = () => async (dispatch) => {
 
 // CLEAR CART
 export const fetchClearCart = () => async (dispatch) => {
-    const response = await fetch(`/api/cart/clear`, {
+    const response = await fetch(`/api/shopping-cart/clear`, {
         method: 'DELETE',
     });
 

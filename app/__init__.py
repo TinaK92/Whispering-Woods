@@ -43,7 +43,7 @@ app.register_blueprint(colors_routes, url_prefix='/api/colors')
 app.register_blueprint(image_routes, url_prefix='/api/images')
 app.register_blueprint(category_routes, url_prefix='/api/categories')
 app.register_blueprint(adoption_routes, url_prefix='/api/adoptions')
-app.register_blueprint(cart_routes, url_prefix='/api/cart' )
+app.register_blueprint(cart_routes, url_prefix='/api/shopping-cart' )
 db.init_app(app)
 
 

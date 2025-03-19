@@ -134,17 +134,6 @@ def update_listing(id):
             if size:
                 listing.sizes.append(size)
 
-        # Update colors
-        # color_id = form.color.data
-        # color_obj = Color.query.get(color_id)
-        # if not color_obj:
-        #     return {"errors": {"color": "Invalid color chosen"}}, 400
-        
-        # front_image = Image.query.get(listing.id)
-        # front_image.color_id = color_id
-        # back_image = Image.query.get(listing.id)
-        # back_image.color_id = color_id
-
         # Update color
         color_id = form.color.data
         color_obj = Color.query.get(color_id)
@@ -160,9 +149,6 @@ def update_listing(id):
         back_image = Image.query.filter_by(listing_id=listing.id, back=True).first()
         if back_image:
             back_image.color_id = color_id
-
-        # db.session.add(front_image)
-        # db.session.add(back_image)
 
         db.session.commit()
         return listing.to_dict(), 200

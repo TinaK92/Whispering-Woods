@@ -48,7 +48,7 @@ export const ListingDetails = () => {
             <p className="listing-quantity">In Stock: {listing.quantity}</p>
             <div className="cart-button">
                 <button
-               
+                    onClick={() => handleAddToCart(listing.id)}
                 >Add To Cart
                 </button>
             </div>

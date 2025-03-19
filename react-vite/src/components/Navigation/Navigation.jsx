@@ -3,8 +3,6 @@ import ProfileButton from "./ProfileButton";
 import "./Navigation.css";
 import { FaShoppingCart } from "react-icons/fa";
 
-
-
 function Navigation() {
   return (
     <div className="nav-links">
@@ -26,8 +24,8 @@ function Navigation() {
       <div className="profile-div">
         <ProfileButton />
       </div>
-      <Link to='/current/shoppingcart'>
-      <FaShoppingCart />
+      <Link to="/current/shopping-cart">
+        <FaShoppingCart />
       </Link>
     </div>
   );

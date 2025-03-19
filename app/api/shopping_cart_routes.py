@@ -12,10 +12,10 @@ load_dotenv()
 @cart_routes.route('/<int:id>', methods=['GET'])
 @login_required
 def get_cart(id):
-    cart = cart.query.filter_by(user_id=id)
+    cart = Cart.query.filter_by(user_id=id).first()
 
     if not cart: 
-        cart= Cart(user_id=current_user.id)
+        cart = Cart(user_id=current_user.id)
     db.session.add(cart)
     db.session.commit()
 
@@ -44,7 +44,7 @@ def add_to_cart():
     if listing.quantity < quantity:
         return {'error': 'The quantity exceeds our inventory, please change quantity'}, 400
     
-    cart_item = CartItem(cart_id=cart.id, listing_id=listing_id)
+    cart_item = CartItem.query.filter_by(cart_id=cart.id, listing_id=listing_id).first()
 
     if cart_item:
         if cart_item.quantity + quantity > listing.quantity:
@@ -54,10 +54,11 @@ def add_to_cart():
         cart_item = CartItem(cart_id=cart.id, listing_id=listing.id, quantity=quantity)
         db.session.add(cart_item)
 
-    listing.qantity -= quantity
+    if hasattr(listing, 'quantity'):
+        listing.quantity -= quantity
     db.session.commit()
 
-    return jsonify(cart.to_dict()), 400
+    return jsonify(cart.to_dict()), 200
 
 # UPDATE CART ITEMS 
 @cart_routes.route('/<int:item_id>', methods=['PUT'])
