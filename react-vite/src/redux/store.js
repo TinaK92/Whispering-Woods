@@ -10,6 +10,8 @@ import listingsReducer from "./listing";
 import sizesReducer from "./size";
 import colorsReducer from "./color";
 import adoptionReducer from "./adoption";
+import cartReducer from "./shoppingCart";
+
 
 const rootReducer = combineReducers({
   session: sessionReducer,
@@ -17,6 +19,7 @@ const rootReducer = combineReducers({
   sizes: sizesReducer,
   colors: colorsReducer,
   adoptions: adoptionReducer,
+  shoppingCart: cartReducer,
 });
 
 let enhancer;

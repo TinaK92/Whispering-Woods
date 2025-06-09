@@ -4,6 +4,7 @@ import {
   fetchCart,
   fetchDeleteItemFromCart,
   fetchClearCart,
+  fetchUpdateCartItem,
 } from "../../redux/shoppingCart";
 import { useNavigate } from "react-router-dom";
 
@@ -56,12 +57,12 @@ export const ShoppingCart = () => {
                 {cart.cart_items.map((item) => (
                     <div
                         key={item.id}
-                        classname='cart-item'
+                        className='cart-item'
                     >
                         <img 
                             className="shop-cart-image"
-                            src={item.listing.image_url}
-                            alt={item.listing.title
+                            src={item.listing.front_image}
+                            alt={item.listing.name
                             }
                         />
                         <div className="cart-info">
@@ -71,8 +72,8 @@ export const ShoppingCart = () => {
                             </div>
                             <div className="cart-item-quantity">
                                 <button 
-                                    classname="cart-quantity-button"
-                                    onClick={() => handleUpdateQuantity(item.od, item.quantity + 1)
+                                    className="cart-quantity-button"
+                                    onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)
                                     }
                                     >
                                         +
@@ -109,7 +110,7 @@ export const ShoppingCart = () => {
         ): (
             <div>
                 <p>Your cart is empty.</p>
-                <button type='submit' onClick={handleContinueShopping()}>
+                <button type='submit' onClick={handleContinueShopping}>
                     Continue Shopping
                 </button>
             </div>

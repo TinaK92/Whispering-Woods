@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 // ACTION TYPES
 const GET_CART = 'cart/GET_CART';
 const ADD_TO_CART = 'cart/ADD_TO_CART';
@@ -56,9 +58,14 @@ export const fetchCart = (id) => async (dispatch) => {
 // ADD ITEM TO CART
 export const fetchAddToCart = (listingId, quantity = 1) => async (dispatch, getState) => {
     const state = getState();
-    const currentItem = state.cart.cart.cart_items.find((item) => item.listingId.id === listingId);
 
-    const listing = state.listings.AllListings.find((listing) => listing.id === listingId);
+    const currentItem = state.cart?.cart_items?.find(
+        (item) => item.listing_id === listingId
+    );
+
+    const listing =
+        state.listings.selectedListing ||
+        state.listings.AllListings?.find((listing) => listing.id === listingId);
 
     if (!listing) {
         console.error('Listing not found');
@@ -71,18 +78,20 @@ export const fetchAddToCart = (listingId, quantity = 1) => async (dispatch, getS
         console.error('Quantity exceeds available stock quantity');
         return;
     }
+
     const response = await fetch(`/api/shopping-cart/add`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ listing_id: listingId, quantity }),
     });
 
     if (response.ok) {
         const updatedCart = await response.json();
         dispatch(addToCart(updatedCart));
+        toast.success("Item added to cart!")
     } else {
-        console.error('Failed to add item to cart:', response.statusText);
+        const errText = await response.text();
+        console.error('Failed to add item to cart:', errText);
     }
 };
 
@@ -99,17 +108,21 @@ export const fetchUpdateCartItem = (itemId, quantity) => async (dispatch) => {
     if (response.ok) {
         const updatedItem = await response.json();
         dispatch(updateCartItem(updatedItem));
+    } else {
+        console.error("Failed to update cart item")
     }
 };
 
 // REMOVE ITEM FROM CART
-export const fetchDeleteItemFromCart = () => async (dispatch) => {
+export const fetchDeleteItemFromCart = (itemId) => async (dispatch) => {
     const response = await fetch(`/api/shopping-cart/${itemId}`, {
         method: 'DELETE',
     });
 
     if (response.ok) {
         dispatch(deleteCartItem(itemId));
+    } else {
+        console.error("Failed to delete item from cart")
     }
 };
 
@@ -127,48 +140,44 @@ export const fetchClearCart = () => async (dispatch) => {
 };
 
 // STATE
-const initialState = { cart: { cart_items: [] } };
+const initialState = { cart_items: [] };
+
 
 // CART REDUCER
 export default function cartReducer(state = initialState, action) {
     switch (action.type) {
         case GET_CART:
-            return { ...state, cart: action.payload || { cart_items: [] } };
-        case ADD_TO_CART:
-            const updatedCartItem = action.paylaod.cart_items;
             return {
-                ...state, 
-                cart: {
-                    ...state.cart,
-                    cart_items: updatedCartItem,
-                },
+                ...state,
+                cart_items: action.payload?.cart_items || [],
+            };
+        case ADD_TO_CART:
+            return {
+                ...state,
+                cart_items: action.payload.cart_items,
             };
         case UPDATE_CART_ITEM:
             return {
                 ...state,
-                cart: {
-                    ...state.cart,
-                    cart_items: state.cart.cart_items.map((item) => item.id === action.payload.id ? action.payload : item),
-                }
+                cart_items: state.cart_items.map((item) =>
+                    item.id === action.payload.id ? action.payload : item
+                ),
             };
         case REMOVE_FROM_CART:
             return {
                 ...state,
-                cart: {
-                    ...state.cart,
-                    cart_items: state.cart.cart_items.filter((item) => item.id !== action.payload)
-                }
+                cart_items: state.cart_items.filter(
+                    (item) => item.id !== action.payload
+                ),
             };
         case CLEAR_CART:
             return {
                 ...state,
-                cart: {
-                    ...state.cart,
-                    cart_items: [],
-                }
+                cart_items: [],
             };
         default:
             return state;
     }
 }
+
 

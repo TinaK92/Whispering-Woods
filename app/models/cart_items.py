@@ -20,6 +20,33 @@ class CartItem(db.Model):
     cart = db.relationship("Cart", back_populates="cart_items")
     listing = db.relationship("Listing")
 
+    # def to_dict(self):
+    #     return {
+    #         "id": self.id,
+    #         "cart_id": self.cart_id,
+    #         "listing_id": self.listing_id,
+    #         "quantity": self.quantity,
+    #         "created_at": self.created_at,
+    #         "listing": {
+    #             "id": self.id,
+    #             "user_id": self.user_id,
+    #             "name": self.name,
+    #             "description": self.description,
+    #             "base_price": str(
+    #                 self.base_price
+    #             ),  # Convert to string for JSON serialization
+    #             "sizes": [
+    #                 size.to_dict() for size in self.sizes
+    #             ],  # Assuming `Size` has a `to_dict` method
+    #             "colors": [
+    #                 color.to_dict() for color in self.colors
+    #             ],  # Assuming `Color` has a `to_dict` method
+    #             "images": [image.to_dict() for image in self.images],
+    #             "created_at": self.created_at.isoformat() if self.created_at else None,
+    #             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+    #         }
+    #     }
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -27,22 +54,5 @@ class CartItem(db.Model):
             "listing_id": self.listing_id,
             "quantity": self.quantity,
             "created_at": self.created_at,
-            "listing": {
-                "id": self.id,
-                "user_id": self.user_id,
-                "name": self.name,
-                "description": self.description,
-                "base_price": str(
-                    self.base_price
-                ),  # Convert to string for JSON serialization
-                "sizes": [
-                    size.to_dict() for size in self.sizes
-                ],  # Assuming `Size` has a `to_dict` method
-                "colors": [
-                    color.to_dict() for color in self.colors
-                ],  # Assuming `Color` has a `to_dict` method
-                "images": [image.to_dict() for image in self.images],
-                "created_at": self.created_at.isoformat() if self.created_at else None,
-                "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            }
+            "listing": self.listing.to_dict() if self.listing else None,
         }

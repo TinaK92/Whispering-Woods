@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchGetListing, fetchDeleteListing } from "../../redux/listing";
+import { fetchAddToCart } from "../../redux/shoppingCart";
 
 
 export const ListingDetails = () => {
@@ -19,7 +20,7 @@ export const ListingDetails = () => {
         return <p>Listing not found!</p>
     }
 
-    const isAdmin = user.role === "admin";
+    const isAdmin = user?.role === "admin";
 
     const handleEdit = (id) => {
         navigate(`/listings/${id}/edit`)
@@ -30,8 +31,8 @@ export const ListingDetails = () => {
         navigate('/listings')
     }
 
-    const handleAddToCart = (listingId) => {
-        dispatch()
+    const handleAddToCart = (listing) => {
+        dispatch(fetchAddToCart(listing.id))
     }
 
     return (
@@ -48,7 +49,7 @@ export const ListingDetails = () => {
             <p className="listing-quantity">In Stock: {listing.quantity}</p>
             <div className="cart-button">
                 <button
-                    onClick={() => handleAddToCart(listing.id)}
+                    onClick={() => handleAddToCart(listing)}
                 >Add To Cart
                 </button>
             </div>

@@ -25,47 +25,65 @@ def get_cart(id):
 @cart_routes.route('/add', methods=['POST'])
 @login_required
 def add_to_cart():
-    data = request.json
-    listing_id = data.get('listing_id')
-    quantity = data.get('quantity', 1)
+    try:
+        data = request.get_json()
+        print("📥 Incoming data:", data)
 
-    cart = Cart.query.filter_by(user_id=current_user.id).first()
+        listing_id = data.get('listing_id')
+        quantity = data.get('quantity', 1)
 
-    if not cart:
-        cart = Cart(user_id=current_user.id)
-        db.session.add(cart)
-        db.session.commit()
+        # Validate listing_id
+        if not isinstance(listing_id, int):
+            try:
+                listing_id = int(listing_id)
+            except (ValueError, TypeError):
+                return jsonify({'error': 'Invalid listing ID'}), 400
 
-    listing = Listing.query.get(listing_id)
+        # Validate quantity
+        if not isinstance(quantity, int) or quantity < 1:
+            return jsonify({'error': 'Invalid quantity'}), 400
 
-    if not listing:
-        return {'error': 'Listing not found'}, 404
-    
-    if listing.quantity < quantity:
-        return {'error': 'The quantity exceeds our inventory, please change quantity'}, 400
-    
-    cart_item = CartItem.query.filter_by(cart_id=cart.id, listing_id=listing_id).first()
+        # Get or create user's cart
+        cart = Cart.query.filter_by(user_id=current_user.id).first()
+        if not cart:
+            cart = Cart(user_id=current_user.id)
+            db.session.add(cart)
+            db.session.commit()
 
-    if cart_item:
-        if cart_item.quantity + quantity > listing.quantity:
-            return {'error': 'Quantity exceeds our inventory, please change quantity'}, 400
-        cart_item.quantity += quantity
-    else: 
-        cart_item = CartItem(cart_id=cart.id, listing_id=listing.id, quantity=quantity)
-        db.session.add(cart_item)
+        # Get the listing
+        listing = Listing.query.get(listing_id)
+        if not listing:
+            return jsonify({'error': 'Listing not found'}), 404
 
-    if hasattr(listing, 'quantity'):
+        if listing.quantity < quantity:
+            return jsonify({'error': 'Quantity exceeds inventory'}), 400
+
+        # Get or create cart item
+        cart_item = CartItem.query.filter_by(cart_id=cart.id, listing_id=listing_id).first()
+        if cart_item:
+            if cart_item.quantity + quantity > listing.quantity:
+                return jsonify({'error': 'Quantity too high'}), 400
+            cart_item.quantity += quantity
+        else:
+            cart_item = CartItem(cart_id=cart.id, listing_id=listing.id, quantity=quantity)
+            db.session.add(cart_item)
+
+        # Update listing stock
         listing.quantity -= quantity
-    db.session.commit()
 
-    return jsonify(cart.to_dict()), 200
+        db.session.commit()
+        return jsonify(cart.to_dict()), 200
+
+    except Exception as e:
+        print("🔥 Error in add_to_cart:", str(e))
+        return jsonify({'error': str(e)}), 500
 
 # UPDATE CART ITEMS 
 @cart_routes.route('/<int:item_id>', methods=['PUT'])
 @login_required
 def update_cart_item(item_id):
     data = request.json
-    new_quantity = data.get(item_id)
+    new_quantity = data.get("quantity")
 
     cart_item = CartItem.query.get(item_id)
 
